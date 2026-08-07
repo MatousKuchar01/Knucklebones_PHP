@@ -6,6 +6,8 @@ namespace App\Service;
 
 class RenderService
 {
+    public function renderIntro(): void {}
+    
     public function clearScreen(): void {}
 
     public function renderVictory(): void {}
