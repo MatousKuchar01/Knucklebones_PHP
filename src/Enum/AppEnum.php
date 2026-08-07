@@ -6,8 +6,8 @@ namespace App\Enum;
 
 enum AppEnum: string
 {
-		// intro 
+    // intro 
     case GAME_TITLE = 'Knucklebones';
-		case GAME_INTRO = 'X';
+    case GAME_INTRO = 'X';
 }
   
