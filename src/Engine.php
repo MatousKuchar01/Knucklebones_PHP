@@ -9,23 +9,24 @@ use App\Service\RenderService;
 
 class Engine
 {
-    private RenderService $renderService
-    
-	public function __construct(RenderService $renderService) {}
+	public function __construct(private RenderService $renderService) {}
 
 	/**
 	 * main game loop
 	 * @param SymfonyStyle $io
    * @return void
 	 */
-	public function play(SymfonyStyle $io): void 
+	public function play(SymfonyStyle $io): void
     {
+        $this->renderService->renderIntro($io);
+
         $gameOver = false;
 
         while (!$gameOver) {
-            
+            //todo
         }
 
         $this->renderService->clearScreen();
         $this->renderService->renderVictory();
     }
+}

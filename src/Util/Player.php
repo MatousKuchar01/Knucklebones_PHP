@@ -9,15 +9,15 @@ use App\Util\Board;
 
 class Player implements PlayerInterface
 {
-    public function __construct() {}
-  
-    public function getName()
+    public function __construct(private Board $board) {}
+
+    public function getName(): string
     {
         return "X";
     }
 
     public function getBoard(): Board
     {
-        return new Board();
+        return $this->board;
     }
 }

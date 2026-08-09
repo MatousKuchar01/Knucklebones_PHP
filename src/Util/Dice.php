@@ -9,13 +9,13 @@ class Dice
     /** @var int */
     private int $value; // 1 to 6
     /** @var int */
-    private readonly int $sides = 6;
-  
+    private int $sides = 6;
+
     public function __construct() { $this->roll(); }
 
     /**
     * rolls a random number
-    * @return int 
+    * @return int
     */
     public function roll(): int
     {

@@ -3,7 +3,10 @@
 declare(strict_types=1);
 
 namespace App\Util;
-/** 
+
+use App\Util\Dice;
+
+/**
 * 3x3 grid
 * [][][]
 * [][][]
@@ -21,17 +24,17 @@ class Board
 		1 => [],
 		2 => [],
 	];
-	
+
 	public function __construct() {}
 
 	/**
 	* if one player fills the board, the game is over
-	* @return bool 
+	* @return bool
 	*/
-	public function isFull(): bool 
+	public function isFull(): bool
 	{
         $fullColumnsCount = 0;
-			
+
         for ($i = 0; $i < 3; $i++) {
             if (sizeof($this->columns[$i]) === self::COLUMN_DICE_LIMIT) {
                 $fullColumnsCount++;
@@ -44,19 +47,43 @@ class Board
     /**
 	* is column im placing dice in full?
     * @param int $columnIdx
-	* @return bool 
+	* @return bool
 	*/
-	public function canPlaceDice(int $columnIdx): bool 
+	public function canPlaceDice(int $columnIdx): bool
     {
-        return sizeof($this->columns[columnIdx]) === self::COLUMN_DICE_LIMIT;
+        return sizeof($this->columns[$columnIdx]) < self::COLUMN_DICE_LIMIT;
     }
 
-	public function placeDice() 
+    /**
+     * placing dice on the board
+     * @param int $columnIdx
+     * @param Dice $dice
+     * @return void
+     */
+	public function placeDice(int $columnIdx, Dice $dice): void
     {
-        if (!$this->canPlaceDice()) {
+        if (!$this->canPlaceDice($columnIdx)) {
             return;
         }
 
-        //todo
+        $this->columns[$columnIdx][] = $dice->getValue();
+    }
+
+    /**
+     * @param int $columnIdx
+     * @param Dice $dice
+     * @return int
+     */
+    public function removeMatchingDice(int $columnIdx, Dice $dice): int
+    {
+        $numberOfDiceInColumn = sizeof($this->columns[$columnIdx]);
+        $filteredColumnAfterMatch = array_filter($this->columns[$columnIdx], fn ($x) => $x != $dice->getValue());
+
+        $notMatchingDice = sizeof($filteredColumnAfterMatch);
+        $matchingDice = $numberOfDiceInColumn - $notMatchingDice;
+
+        $this->columns[$columnIdx] = array_values($filteredColumnAfterMatch);
+
+        return $matchingDice;
     }
 }
