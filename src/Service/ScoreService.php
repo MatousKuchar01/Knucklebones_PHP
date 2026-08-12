@@ -4,12 +4,42 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Util\Board;
+
 class ScoreService
 {
-    private const MULTIPLIER_2X = 2;
-    private const MULTIPLIER_3X = 3;
+    /**
+    * core mechanic -> multiplication of score by stacking numbers of same value
+    * @param array $column
+    * @return int
+    */
+    public function calculateColumnScore(array $column): int
+    {
+        $columnScore = 0;
 
-    public function multiplyScoreByNumberOfDice(): int {}
+        $occurancesOfNumbers = array_count_values($column);
 
-    public function getTotalPlayerScore(): int {}
+        foreach ($occurancesOfNumbers as $value => $times) {
+            $columnScore += ($value * $times) * $times;
+        }
+
+        return $columnScore;
+    }
+
+
+    /**
+    * gets total score in all columns
+    * @param Board $board
+    * @return int
+    */
+    public function getTotalPlayerScore(Board $board): int
+    {
+        $totalScore = 0;
+
+        for ($i = 0; $i < 3; $i++) {
+            $totalScore += $this->calculateColumnScore($board->columns[$i]);
+        }
+
+        return $totalScore;
+    }
 }
