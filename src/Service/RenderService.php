@@ -76,7 +76,7 @@ class RenderService
         $io->title(AppEnum::APP_TITLE->value);
         $io->writeln(AppEnum::APP_INTRO->value);
         $io->ask(AppEnum::PRESS_ENTER_TO_START->value);
-        $this->clearScreen();
+        $this->clearScreen($io);
     }
 
     /**
@@ -118,7 +118,7 @@ class RenderService
             return;
         }
 
-        $io->text(AppEnum::CURRENT_ROLL->value . "[$currentDice->getValue()]");
+        $io->text(AppEnum::CURRENT_ROLL->value . " [{$currentDice->getValue()}]");
     }
 
     /**
@@ -126,7 +126,19 @@ class RenderService
     */
     private function renderBoard(SymfonyStyle $io, Board $board): void
     {
+        for ($row = 0; $row < 3; $row++) {
+            $dice1 = $board->columns[0][$row] ?? 0;
+            $dice2 = $board->columns[1][$row]?? 0;
+            $dice3 = $board->columns[2][$row] ?? 0;
 
+            for ($line = 0; $line < 5; $line++) {
+                $io->writeln(
+                    $this->asciiDiceMap[$dice1][$line] . " " .
+                    $this->asciiDiceMap[$dice2][$line] . " " .
+                    $this->asciiDiceMap[$dice3][$line]
+                );
+            }
+        }
     }
 
     private function renderPlayerNameAndScore(SymfonyStyle $io, PlayerInterface $player): void
@@ -140,19 +152,17 @@ class RenderService
         SymfonyStyle $io,
         Player $player,
         Player_AI $ai,
-        Board $playerBoard,
-        Board $aiBoard,
         ?Dice $currentDice = null
     ): void
     {
-        $this->clearScreen();
+        $this->clearScreen($io);
         $this->renderSeparatorBig($io);
         $this->renderPlayerNameAndScore($io, $ai);
-        $this->renderBoard($aiBoard);
+        $this->renderBoard($io, $ai->getBoard());
         $this->renderSeparatorSmall($io);
         $this->renderCurrentRoll($io, $currentDice);
         $this->renderSeparatorSmall($io);
-        $this->renderBoard($playerBoard);
+        $this->renderBoard($io, $player->getBoard());
         $this->renderPlayerNameAndScore($io, $player);
         $this->renderSeparatorBig($io);
     }
