@@ -38,4 +38,8 @@ enum AppEnum: string
     case PRESS_ENTER_TO_START = 'Press [ENTER] to start the game';
     case CURRENT_ROLL = 'Just rolled: ';
     case WAITING_ON_ROLL = 'Waiting on dice roll...';
+
+    case PROMPT_USER = 'Type number of column you want to place dice to:';
+	case EXIT = 'exit';
+	case GOODBYE = 'You exited the game:( See you again....';
 }

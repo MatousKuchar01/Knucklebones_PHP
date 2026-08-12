@@ -26,16 +26,34 @@ class Engine
 
         $gameOver = false;
 
-        $board = new Board();
-        $dice = new Dice();
-
-        $player = new Player($board);
-        $ai = new Player_AI($board);
-
-        $this->renderService->renderPlayingBoardsAndDice($io, $player, $ai, $dice);
+        $player = new Player(new Board());
+        $ai = new Player_AI(new Board());
 
         while (!$gameOver) {
+            // player turn
+            $dice = new Dice();
+            $this->renderService->renderPlayingBoardsAndDice($io, $player, $ai, $dice);
+            $columnNumber = $this->renderService->renderUserAnswerField($io);
 
+            $player->getBoard()->placeDice((int)$columnNumber - 1, $dice);
+            $ai->getBoard()->removeMatchingDice((int)$columnNumber, $dice);
+
+            if ($player->getBoard()->isFull()) {
+                $gameOver = true;
+                break;
+            }
+
+            // ai turn
+            $dice = new Dice();
+            //$columnNumber = $ai->chooseColumn($dice, $player->getBoard());
+
+            $ai->getBoard()->placeDice((int)$columnNumber - 1, $dice);
+            $player->getBoard()->removeMatchingDice((int)$columnNumber, $dice);
+
+            if ($ai->getBoard()->isFull()) {
+                $gameOver = true;
+                break;
+            }
         }
 
         $this->renderService->clearScreen();

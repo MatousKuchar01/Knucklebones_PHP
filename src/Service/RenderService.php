@@ -88,6 +88,24 @@ class RenderService
         $io->write("\033[2J\033[;H");
     }
 
+
+    /**
+     * @param SymfonyStyle $io
+     * @param callable $validator
+     * @return string
+     */
+    public function renderUserAnswerField(SymfonyStyle $io): string
+    {
+       	$answer = $io->ask(AppEnum::PROMPT_USER->value, null);
+
+		if (strtolower($answer) === AppEnum::EXIT->value) {
+	    	$io->warning(AppEnum::GOODBYE->value);
+		    exit;
+		}
+
+       	return (string) $answer;
+    }
+
     /**
      * @param SymfonyStyle $io
      * @return void
@@ -141,9 +159,17 @@ class RenderService
         }
     }
 
+    /**
+    * @return void
+    */
     private function renderPlayerNameAndScore(SymfonyStyle $io, PlayerInterface $player): void
     {
+        $io->writeln("{$player->getName()}" . " - Score: {$this->scoreService->getTotalPlayerScore($player->getBoard())}");
+    }
 
+    private function renderColumnsHintNumber(SymfonyStyle $io): void
+    {
+        $io->writeln("[   1   ]" . " " . "[   2   ]" . " " . "[   3   ]");
     }
 
     public function renderVictory(): void {}
@@ -158,11 +184,13 @@ class RenderService
         $this->clearScreen($io);
         $this->renderSeparatorBig($io);
         $this->renderPlayerNameAndScore($io, $ai);
+        $this->renderColumnsHintNumber($io);
         $this->renderBoard($io, $ai->getBoard());
         $this->renderSeparatorSmall($io);
         $this->renderCurrentRoll($io, $currentDice);
         $this->renderSeparatorSmall($io);
         $this->renderBoard($io, $player->getBoard());
+        $this->renderColumnsHintNumber($io);
         $this->renderPlayerNameAndScore($io, $player);
         $this->renderSeparatorBig($io);
     }

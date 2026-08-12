@@ -6,6 +6,7 @@ namespace App\Util;
 
 use App\Interface\PlayerInterface;
 use App\Util\Board;
+use App\Util\Dice;
 
 class Player_AI implements PlayerInterface
 {
@@ -20,4 +21,6 @@ class Player_AI implements PlayerInterface
     {
         return $this->board;
     }
+
+    public function chooseColumn(Dice $dice, Board $playerBoard) {}
 }
