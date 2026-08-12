@@ -36,4 +36,6 @@ enum AppEnum: string
 
     // misc
     case PRESS_ENTER_TO_START = 'Press [ENTER] to start the game';
+    case CURRENT_ROLL = 'Just rolled: ';
+    case WAITING_ON_ROLL = 'Waiting on dice roll...';
 }
