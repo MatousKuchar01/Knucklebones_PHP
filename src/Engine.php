@@ -18,7 +18,7 @@ class Engine
 	/**
 	 * main game loop
 	 * @param SymfonyStyle $io
-   * @return void
+     * @return void
 	 */
 	public function play(SymfonyStyle $io): void
     {
@@ -32,11 +32,15 @@ class Engine
         while (!$gameOver) {
             // player turn
             $dice = new Dice();
-            $this->renderService->renderPlayingBoardsAndDice($io, $player, $ai, $dice);
-            $columnNumber = $this->renderService->renderUserAnswerField($io);
 
-            $player->getBoard()->placeDice((int)$columnNumber - 1, $dice);
-            $ai->getBoard()->removeMatchingDice((int)$columnNumber, $dice);
+            do {
+                $this->renderService->renderPlayingBoardsAndDice($io, $player, $ai, $dice);
+                $columnNumber = $this->renderService->renderUserAnswerField($io);
+                $playerColumn = (int)$columnNumber - 1;
+            } while ($playerColumn < 0 || $playerColumn > 2 || !$player->getBoard()->canPlaceDice($playerColumn));
+
+            $player->getBoard()->placeDice($playerColumn, $dice);
+            $ai->getBoard()->removeMatchingDice($playerColumn, $dice);
 
             if ($player->getBoard()->isFull()) {
                 $gameOver = true;
@@ -45,10 +49,12 @@ class Engine
 
             // ai turn
             $dice = new Dice();
-            //$columnNumber = $ai->chooseColumn($dice, $player->getBoard());
+            $columnNumber = $ai->chooseColumn($dice, $player->getBoard());
 
-            $ai->getBoard()->placeDice((int)$columnNumber - 1, $dice);
+            $ai->getBoard()->placeDice((int)$columnNumber, $dice);
             $player->getBoard()->removeMatchingDice((int)$columnNumber, $dice);
+
+            $this->renderService->renderPlayingBoardsAndDice($io, $player, $ai, $dice);
 
             if ($ai->getBoard()->isFull()) {
                 $gameOver = true;
@@ -56,7 +62,7 @@ class Engine
             }
         }
 
-        $this->renderService->clearScreen();
-        $this->renderService->renderVictory();
+        $this->renderService->clearScreen($io);
+        $this->renderService->renderVictory($io, $player, $ai);
     }
 }
