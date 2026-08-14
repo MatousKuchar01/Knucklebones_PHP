@@ -10,6 +10,7 @@ use App\Util\Dice;
 use App\Util\Board;
 use App\Util\Player;
 use App\Util\Player_AI;
+use App\Enum\AppEnum;
 
 class Engine
 {
@@ -49,10 +50,15 @@ class Engine
 
             // ai turn
             $dice = new Dice();
+
+            $io->text(AppEnum::JEFF_IS_THINKING->value);
+            sleep(3);
+
             $columnNumber = $ai->chooseColumn($dice, $player->getBoard());
+            $columnHumanIdx = $columnNumber + 1;
 
             $ai->getBoard()->placeDice((int)$columnNumber, $dice);
-            $player->getBoard()->removeMatchingDice((int)$columnNumber, $dice);
+            $removedDiceByAi = $player->getBoard()->removeMatchingDice((int)$columnNumber, $dice);
 
             $this->renderService->renderPlayingBoardsAndDice($io, $player, $ai, $dice);
 
@@ -60,6 +66,14 @@ class Engine
                 $gameOver = true;
                 break;
             }
+
+            $io->text("Jeff placed a dice worth {$dice->getValue()} in column {$columnHumanIdx}!");
+
+            if ($removedDiceByAi > 0) {
+                $io->text("Jeff removed your dice worth {$dice->getValue()} {$removedDiceByAi}x times!");
+            }
+
+            sleep(3);
         }
 
         $this->renderService->clearScreen($io);
