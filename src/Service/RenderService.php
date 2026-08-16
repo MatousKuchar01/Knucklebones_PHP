@@ -139,22 +139,43 @@ class RenderService
         $io->text(AppEnum::CURRENT_ROLL->value . " [{$currentDice->getValue()}]");
     }
 
-    /**
-    * @return void
-    */
+
+    private function colorizeDiceLine(string $asciiLine, int $multiplier): string
+    {
+        if ($multiplier === 2) {
+            return str_replace('●', '<fg=yellow;options=bold>●</>', $asciiLine);
+        }
+
+        if ($multiplier >= 3) {
+            return str_replace('●', '<fg=red;options=bold>●</>', $asciiLine);
+        }
+
+        return $asciiLine;
+    }
+
+
+
     private function renderBoard(SymfonyStyle $io, Board $board): void
     {
         for ($row = 0; $row < 3; $row++) {
             $dice1 = $board->columns[0][$row] ?? 0;
-            $dice2 = $board->columns[1][$row]?? 0;
+            $dice2 = $board->columns[1][$row] ?? 0;
             $dice3 = $board->columns[2][$row] ?? 0;
 
+            $mult1 = $this->scoreService->getDiceMultiplier($board->columns[0], $dice1);
+            $mult2 = $this->scoreService->getDiceMultiplier($board->columns[1], $dice2);
+            $mult3 = $this->scoreService->getDiceMultiplier($board->columns[2], $dice3);
+
             for ($line = 0; $line < 5; $line++) {
-                $io->writeln(
-                    $this->asciiDiceMap[$dice1][$line] . " " .
-                    $this->asciiDiceMap[$dice2][$line] . " " .
-                    $this->asciiDiceMap[$dice3][$line]
-                );
+                $line1 = $this->asciiDiceMap[$dice1][$line];
+                $line2 = $this->asciiDiceMap[$dice2][$line];
+                $line3 = $this->asciiDiceMap[$dice3][$line];
+
+                $coloredLine1 = $this->colorizeDiceLine($line1, $mult1);
+                $coloredLine2 = $this->colorizeDiceLine($line2, $mult2);
+                $coloredLine3 = $this->colorizeDiceLine($line3, $mult3);
+
+                $io->writeln("{$coloredLine1} {$coloredLine2} {$coloredLine3}");
             }
         }
     }

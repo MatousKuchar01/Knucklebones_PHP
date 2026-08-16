@@ -42,4 +42,15 @@ class ScoreService
 
         return $totalScore;
     }
+
+
+    public function getDiceMultiplier(array $column, int $diceValue): int
+    {
+        if ($diceValue === 0) {
+            return 1;
+        }
+
+        $counts = array_count_values($column);
+        return $counts[$diceValue] ?? 1;
+    }
 }
