@@ -23,67 +23,71 @@ class Engine
 	 */
 	public function play(SymfonyStyle $io): void
     {
-        $this->renderService->renderIntro($io);
+        do {
+            $this->renderService->renderIntro($io);
 
-        $gameOver = false;
+            $gameOver = false;
 
-        $player = new Player(new Board());
-        $ai = new Player_AI(new Board());
+            $player = new Player(new Board());
+            $ai = new Player_AI(new Board());
 
-        while (!$gameOver) {
-            // player turn
-            $dice = new Dice();
+            while (!$gameOver) {
+                // player turn
+                $dice = new Dice();
 
-            do {
+                do {
+                    $this->renderService->renderPlayingBoardsAndDice($io, $player, $ai, $dice);
+                    $columnNumber = $this->renderService->renderUserAnswerField($io);
+                    $playerColumn = (int)$columnNumber - 1;
+                } while ($playerColumn < 0 || $playerColumn > 2 || !$player->getBoard()->canPlaceDice($playerColumn));
+
+                $player->getBoard()->placeDice($playerColumn, $dice);
+                $removedByPlayer = $ai->getBoard()->removeMatchingDice($playerColumn, $dice);
+
                 $this->renderService->renderPlayingBoardsAndDice($io, $player, $ai, $dice);
-                $columnNumber = $this->renderService->renderUserAnswerField($io);
-                $playerColumn = (int)$columnNumber - 1;
-            } while ($playerColumn < 0 || $playerColumn > 2 || !$player->getBoard()->canPlaceDice($playerColumn));
 
-            $player->getBoard()->placeDice($playerColumn, $dice);
-            $removedByPlayer = $ai->getBoard()->removeMatchingDice($playerColumn, $dice);
+                if ($removedByPlayer > 0) {
+                    $io->text("You destroyed {$removedByPlayer}x of Jeff's dice worth {$dice->getValue()}!");
+                }
 
-            $this->renderService->renderPlayingBoardsAndDice($io, $player, $ai, $dice);
+                if ($player->getBoard()->isFull()) {
+                    $gameOver = true;
+                    break;
+                }
 
-            if ($removedByPlayer > 0) {
-                $io->text("You destroyed {$removedByPlayer}x of Jeff's dice worth {$dice->getValue()}!");
+                usleep(1_500_000);
+
+                // ai turn
+                $dice = new Dice();
+
+                $io->text(AppEnum::JEFF_IS_THINKING->value);
+                sleep(3);
+
+                $columnNumber = $ai->chooseColumn($dice, $player->getBoard());
+                $columnHumanIdx = $columnNumber + 1;
+
+                $ai->getBoard()->placeDice((int)$columnNumber, $dice);
+                $removedDiceByAi = $player->getBoard()->removeMatchingDice((int)$columnNumber, $dice);
+
+                $this->renderService->renderPlayingBoardsAndDice($io, $player, $ai, $dice);
+
+                if ($ai->getBoard()->isFull()) {
+                    $gameOver = true;
+                    break;
+                }
+
+                $io->text("Jeff placed a dice worth {$dice->getValue()} in column {$columnHumanIdx}!");
+
+                if ($removedDiceByAi > 0) {
+                    $io->text("Jeff removed your dice worth {$dice->getValue()} {$removedDiceByAi}x times!");
+                }
+
+                sleep(3);
             }
 
-            if ($player->getBoard()->isFull()) {
-                $gameOver = true;
-                break;
-            }
+            $this->renderService->renderVictory($io, $player, $ai);
+            $playAgain = $this->renderService->renderPlayAgain($io);
 
-            usleep(1_500_000);
-
-            // ai turn
-            $dice = new Dice();
-
-            $io->text(AppEnum::JEFF_IS_THINKING->value);
-            sleep(3);
-
-            $columnNumber = $ai->chooseColumn($dice, $player->getBoard());
-            $columnHumanIdx = $columnNumber + 1;
-
-            $ai->getBoard()->placeDice((int)$columnNumber, $dice);
-            $removedDiceByAi = $player->getBoard()->removeMatchingDice((int)$columnNumber, $dice);
-
-            $this->renderService->renderPlayingBoardsAndDice($io, $player, $ai, $dice);
-
-            if ($ai->getBoard()->isFull()) {
-                $gameOver = true;
-                break;
-            }
-
-            $io->text("Jeff placed a dice worth {$dice->getValue()} in column {$columnHumanIdx}!");
-
-            if ($removedDiceByAi > 0) {
-                $io->text("Jeff removed your dice worth {$dice->getValue()} {$removedDiceByAi}x times!");
-            }
-
-            sleep(3);
-        }
-
-        $this->renderService->renderVictory($io, $player, $ai);
+        } while ($playAgain == 'yes');
     }
 }

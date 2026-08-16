@@ -233,4 +233,15 @@ class RenderService
         $this->renderPlayerNameAndScore($io, $player);
         $this->renderSeparatorBig($io);
     }
+
+    public function renderPlayAgain($io): string
+    {
+        return $io->choice("Do you want to try again?",
+            [
+                'yes' => "Start new game",
+                'no' => "Quit"
+            ],
+            'yes'
+        );
+    }
 }
