@@ -4,6 +4,8 @@ A PHP command-line implementation of the **Knucklebones** dice game.
 
 ---
 
+<img width="479" height="921" alt="Screenshot From 2026-08-16 22-05-30" src="https://github.com/user-attachments/assets/bb6b9dd5-38b8-4e46-81e6-8f08d7cd9e07" />
+
 ## Rules of the Game
 
 Knucklebones is played on two **3×3 grids** (one for each player). 
