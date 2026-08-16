@@ -41,12 +41,20 @@ class Engine
             } while ($playerColumn < 0 || $playerColumn > 2 || !$player->getBoard()->canPlaceDice($playerColumn));
 
             $player->getBoard()->placeDice($playerColumn, $dice);
-            $ai->getBoard()->removeMatchingDice($playerColumn, $dice);
+            $removedByPlayer = $ai->getBoard()->removeMatchingDice($playerColumn, $dice);
+
+            $this->renderService->renderPlayingBoardsAndDice($io, $player, $ai, $dice);
+
+            if ($removedByPlayer > 0) {
+                $io->text("You destroyed {$removedByPlayer}x of Jeff's dice worth {$dice->getValue()}!");
+            }
 
             if ($player->getBoard()->isFull()) {
                 $gameOver = true;
                 break;
             }
+
+            usleep(1_500_000);
 
             // ai turn
             $dice = new Dice();
