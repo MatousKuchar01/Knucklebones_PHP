@@ -172,7 +172,25 @@ class RenderService
         $io->writeln("[   1   ]" . " " . "[   2   ]" . " " . "[   3   ]");
     }
 
-    public function renderVictory(): void {}
+    public function renderVictory(SymfonyStyle $io, Player $player, Player_AI $ai): void
+    {
+        $this->clearScreen($io);
+
+        $playerScore = $this->scoreService->getTotalPlayerScore($player->getBoard());
+        $aiScore = $this->scoreService->getTotalPlayerScore($ai->getBoard());
+
+        if ($playerScore > $aiScore) {
+            $io->text(AppEnum::YOU_WON->value);
+        } elseif ($aiScore > $playerScore) {
+            $io->text(AppEnum::JEFF_WON->value);
+        } else {
+            $io->text(AppEnum::DRAW->value);
+        }
+
+
+        $io->text("Final Score -> You: {$playerScore} | Jeff: {$aiScore}");
+        $io->newLine();
+     }
 
     public function renderPlayingBoardsAndDice(
         SymfonyStyle $io,

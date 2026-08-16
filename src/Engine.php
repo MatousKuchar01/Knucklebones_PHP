@@ -76,7 +76,6 @@ class Engine
             sleep(3);
         }
 
-        $this->renderService->clearScreen($io);
         $this->renderService->renderVictory($io, $player, $ai);
     }
 }

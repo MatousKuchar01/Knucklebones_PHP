@@ -39,6 +39,9 @@ enum AppEnum: string
     case CURRENT_ROLL = 'Just rolled: ';
     case WAITING_ON_ROLL = 'Waiting on dice roll...';
     case JEFF_IS_THINKING = 'Jeff is thinking...';
+    case YOU_WON = '<fg=green;options=bold>You won!</>';
+    case JEFF_WON = '<fg=red;options=bold>Jeff won.</>';
+    case DRAW = 'Its a draw.';
 
     case PROMPT_USER = 'Type number of column you want to place dice to:';
 	case EXIT = 'exit';

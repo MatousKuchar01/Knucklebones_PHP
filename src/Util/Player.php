@@ -13,7 +13,7 @@ class Player implements PlayerInterface
 
     public function getName(): string
     {
-        return "X";
+        return "You";
     }
 
     public function getBoard(): Board
