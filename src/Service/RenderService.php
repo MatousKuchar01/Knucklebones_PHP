@@ -9,12 +9,25 @@ use App\Util\Dice;
 use App\Util\Board;
 use App\Service\ScoreService;
 use App\Enum\AppEnum;
+use App\Enum\DiceStyle;
 use App\Interface\PlayerInterface;
 use App\Util\Player;
 use App\Util\Player_AI;
 
 class RenderService
 {
+    /** @var string<DiceStyle> */
+    private DiceStyle $diceStyle = DiceStyle::DOTS;
+
+    /**
+    * @param DiceStyle $diceStyle
+    * @return void
+    */
+    public function setDiceStyle(DiceStyle $diceStyle): void
+    {
+        $this->diceStyle = $diceStyle;
+    }
+
     /** @var array<int, array> */
     public array $asciiDiceMap = [
         0 => [
@@ -147,6 +160,28 @@ class RenderService
     }
 
     /**
+    * prompts user for dice style selection
+    * @param SymfonyStyle $io
+    * @return void
+    */
+    public function selectDiceStyle(SymfonyStyle $io): void
+    {
+        $choice = $io->choice('Choose your dice style:', [
+            'dots' => 'Classic Dots (●)',
+            'crosses' => 'Crosses (✖)',
+            'stars' => 'Stars (★)',
+            'hearts' => 'Hearts (♥)',
+        ], 'dots');
+
+        $this->diceStyle = match ($choice) {
+            'crosses' => DiceStyle::CROSSES,
+            'stars' => DiceStyle::STARS,
+            'hearts' => DiceStyle::HEARTS,
+            default => DiceStyle::DOTS,
+        };
+    }
+
+    /**
      * colors dice based on multiplier
      * @param string $asciiLine
      * @param int $multiplier
@@ -154,15 +189,18 @@ class RenderService
      */
     private function colorizeDiceLine(string $asciiLine, int $multiplier): string
     {
+        $symbol = $this->diceStyle->value;
+        $styledLine = str_replace('●', $symbol, $asciiLine);
+
         if ($multiplier === 2) {
-            return str_replace('●', '<fg=yellow;options=bold>●</>', $asciiLine);
+            return str_replace($symbol, "<fg=yellow;options=bold>{$symbol}</>", $styledLine);
         }
 
         if ($multiplier >= 3) {
-            return str_replace('●', '<fg=red;options=bold>●</>', $asciiLine);
+            return str_replace($symbol, "<fg=red;options=bold>{$symbol}</>", $styledLine);
         }
 
-        return $asciiLine;
+        return $styledLine;
     }
 
 

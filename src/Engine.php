@@ -25,6 +25,7 @@ class Engine
     {
         do {
             $this->renderService->renderIntro($io);
+            $this->renderService->selectDiceStyle($io);
 
             $gameOver = false;
 
