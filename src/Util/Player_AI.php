@@ -12,11 +12,13 @@ class Player_AI implements PlayerInterface
 {
     public function __construct(private Board $board) {}
 
+    /** @return string */
     public function getName(): string
     {
         return "Jeff";
     }
 
+    /** @return Board */
     public function getBoard(): Board
     {
         return $this->board;

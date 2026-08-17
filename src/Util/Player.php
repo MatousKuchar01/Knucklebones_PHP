@@ -11,11 +11,13 @@ class Player implements PlayerInterface
 {
     public function __construct(private Board $board) {}
 
+    /** @return string */
     public function getName(): string
     {
         return "You";
     }
 
+    /** @return Board */
     public function getBoard(): Board
     {
         return $this->board;

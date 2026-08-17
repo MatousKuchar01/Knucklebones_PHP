@@ -43,7 +43,12 @@ class ScoreService
         return $totalScore;
     }
 
-
+    /**
+    * gets multiplier for specific dice in column
+    * @param array $column
+    * @param int $diceValue
+    * @return int
+    */
     public function getDiceMultiplier(array $column, int $diceValue): int
     {
         if ($diceValue === 0) {

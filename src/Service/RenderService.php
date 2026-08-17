@@ -70,7 +70,11 @@ class RenderService
 
     public function __construct(private readonly ScoreService $scoreService) {}
 
-    /** @return void */
+    /**
+    * renders intro of the game
+    * @param SymfonyStyle $io
+    * @return void
+    */
     public function renderIntro(SymfonyStyle $io): void
     {
         $io->title(AppEnum::APP_TITLE->value);
@@ -90,6 +94,7 @@ class RenderService
 
 
     /**
+     * prompt for user to enter column
      * @param SymfonyStyle $io
      * @param callable $validator
      * @return string
@@ -126,6 +131,8 @@ class RenderService
     }
 
     /**
+     * renders current roll of the dice to player
+     * @param Dice|Null $currentDice
      * @param SymfonyStyle $io
      * @return void
      */
@@ -139,7 +146,12 @@ class RenderService
         $io->text(AppEnum::CURRENT_ROLL->value . " [{$currentDice->getValue()}]");
     }
 
-
+    /**
+     * colors dice based on multiplier
+     * @param string $asciiLine
+     * @param int $multiplier
+     * @return string
+     */
     private function colorizeDiceLine(string $asciiLine, int $multiplier): string
     {
         if ($multiplier === 2) {
@@ -154,7 +166,11 @@ class RenderService
     }
 
 
-
+    /**
+    * @param SymfonyStyle $io
+    * @param Board $board
+    * @return void
+    */
     private function renderBoard(SymfonyStyle $io, Board $board): void
     {
         for ($row = 0; $row < 3; $row++) {
@@ -181,6 +197,9 @@ class RenderService
     }
 
     /**
+    * renders name and score of a player
+    * @param SymfonyStyle $io
+    * @param PlayerInterface $player
     * @return void
     */
     private function renderPlayerNameAndScore(SymfonyStyle $io, PlayerInterface $player): void
@@ -188,11 +207,23 @@ class RenderService
         $io->writeln("{$player->getName()}" . " - Score: {$this->scoreService->getTotalPlayerScore($player->getBoard())}");
     }
 
+    /**
+     * renders column numbers behind board for player
+     * @param SymfonyStyle $io
+     * @return void
+     */
     private function renderColumnsHintNumber(SymfonyStyle $io): void
     {
         $io->writeln("[   1   ]" . " " . "[   2   ]" . " " . "[   3   ]");
     }
 
+    /**
+    * renders victory screen after someone wins
+    * @param SymfonyStyle $io
+    * @param Player $player
+    * @param Player_AI $ai
+    * @return void
+    */
     public function renderVictory(SymfonyStyle $io, Player $player, Player_AI $ai): void
     {
         $this->clearScreen($io);
@@ -213,6 +244,14 @@ class RenderService
         $io->newLine();
      }
 
+    /**
+    * main rendering function
+    * @param SymfonyStyle $io
+    * @param Player $player
+    * @param Player_AI $ai
+    * @param Dice|null $currentDice
+    * @return void
+    */
     public function renderPlayingBoardsAndDice(
         SymfonyStyle $io,
         Player $player,
@@ -234,6 +273,11 @@ class RenderService
         $this->renderSeparatorBig($io);
     }
 
+    /**
+    * renders a prompt for user after the game
+    * @param SymfonyStyle $io
+    * @return string
+    */
     public function renderPlayAgain($io): string
     {
         return $io->choice("Do you want to try again?",
