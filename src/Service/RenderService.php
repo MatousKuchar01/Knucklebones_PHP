@@ -90,7 +90,7 @@ class RenderService
     */
     public function renderIntro(SymfonyStyle $io): void
     {
-        $io->title(AppEnum::APP_TITLE->value);
+        $io->writeln(AppEnum::APP_TITLE->value);
         $io->writeln(AppEnum::APP_INTRO->value);
         $io->ask(AppEnum::PRESS_ENTER_TO_START->value);
         $this->clearScreen($io);
